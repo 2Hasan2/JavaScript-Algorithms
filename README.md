@@ -14,3 +14,8 @@
 - Interpolation Search (O(log(log(n))))
 - Exponential Search (O(log(n)))
 - Ternary Search (O(log3(n)))
+
+## 3. popular algorithms
+- Binary Search Tree (BST)
+- Depth First Search (DFS)
+- Dijkstra's Algorithm
