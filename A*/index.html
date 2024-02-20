@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Pathfinding Visualizer</title>
+	<style>
+		*{
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+		body {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			background-color: #f4f4f4;
+		}
+		div{
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 10px;
+		}
+		canvas {
+			border: 1px solid black;
+			width: 800px;
+			height: 800px;
+		}
+		button {
+			margin-top: 10px;
+			padding: 10px;
+			font-size: 20px;
+		}
+	</style>
+</head>
+
+<div>
+	<script src="A*.js"></script>
+	<button onclick="visualizePathfinder()">start</button>
+</div>
+
+<body>
+	<canvas id="canvas" width="2000" height="2000"></canvas>
+	<script>
+		const canvas = document.getElementById('canvas');
+		const ctx = canvas.getContext('2d');
+		const gridSize = 20; // Adjust grid size as needed
+		const numRows = canvas.height / gridSize;
+		const numCols = canvas.width / gridSize;
+
+		// Generate random map with obstacles
+		let map = generateRandomMap(numRows, numCols);
+
+		// Predefined start and goal points randomly
+		let start = { row: Math.floor(Math.random() * numRows), col: Math.floor(Math.random() * numCols) };
+		let goal = { row: Math.floor(Math.random() * numRows), col: Math.floor(Math.random() * numCols) };
+
+
+		// Visualize the path on the canvas
+		function visualizePath(path) {
+			ctx.fillStyle = 'blue';
+			if (path === null) {
+				// recreate the map
+				map = generateRandomMap(numRows, numCols);
+				visualizePathfinder();
+				return;
+			}
+			setTimeout(() => {
+				path.forEach(cell => {
+					const time = 10 * path.indexOf(cell);
+					setTimeout(() => {
+						ctx.fillRect(cell.col * gridSize, cell.row * gridSize, gridSize, gridSize);
+					}, time);
+				});
+			}, 1000);
+		}
+
+		// Generate random map with obstacles
+		function generateRandomMap(numRows, numCols) {
+			let map = [];
+			for (let i = 0; i < numRows; i++) {
+				let row = [];
+				for (let j = 0; j < numCols; j++) {
+					// Randomly assign obstacle or empty space
+					row.push(Math.random() < 0.3 ? 1 : 0); // Adjust obstacle density as needed
+				}
+				map.push(row);
+			}
+			return map;
+		}
+
+		// Main function to run the visualization
+		function visualizePathfinder() {
+			// Find optimal path using A* algorithm
+			const path = astar(start, goal, map);
+
+			// Clear canvas
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// Draw map
+			for (let i = 0; i < numRows; i++) {
+				for (let j = 0; j < numCols; j++) {
+					if (i === start.row && j === start.col) {
+						ctx.fillStyle = 'yellow';
+					} else if (i === goal.row && j === goal.col) {
+						ctx.fillStyle = 'red';
+					}else if (map[i][j] === 1) {
+						ctx.fillStyle = 'black';
+					} else {
+						ctx.fillStyle = 'white';
+						// if it is the start or goal point color green
+					}
+					ctx.fillRect(j * gridSize, i * gridSize, gridSize, gridSize);
+				}
+			}
+
+			// Visualize path
+			visualizePath(path);
+				// random start and end
+			start = { row: Math.floor(Math.random() * numRows), col: Math.floor(Math.random() * numCols) };
+			goal = { row: Math.floor(Math.random() * numRows), col: Math.floor(Math.random() * numCols) };
+		}
+
+	</script>
+</body>
+
+</html>
